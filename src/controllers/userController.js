@@ -19,7 +19,7 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'La cédula ya está registrada' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10); // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
       document,
@@ -34,10 +34,11 @@ const registerUser = async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: 'Usuario registrado correctamente', user: newUser });
   } catch (error) {
-    console.error('Error al registrar el usuario:', error);
-    res.status(500).json({ message: 'Error al registrar el usuario', error });
+    console.error('Error al registrar el usuario:', error);  // Agregar más detalles sobre el error
+    res.status(500).json({ message: 'Error al registrar el usuario', error: error.message });
   }
 };
+
 
 const loginUser = async (req, res) => {
   try {
