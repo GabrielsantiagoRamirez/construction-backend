@@ -2,14 +2,18 @@
     "version": 2,
     "builds": [
       {
-        "src": "src/index.js", 
+        "src": "src/index.js",
         "use": "@vercel/node"
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "src/index.js" 
+        "dest": "src/index.js"
       }
-    ]
+    ],
+    "env": {
+      "MONGO_URI": "mongodb+srv://admin:admin123@construction.uhha3.mongodb.net/?retryWrites=true&w=majority&appName=Construction"
+    }
   }
+  
