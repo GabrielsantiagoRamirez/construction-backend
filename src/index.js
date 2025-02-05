@@ -65,42 +65,43 @@ app.get('/', async (req, res) => {
 
 // Endpoint para registrar un usuario
 app.post('/userregister', async (req, res) => {
-  try {
-    const { document, email, password, name, last_name, cellphone, user_type } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
+    try {
+      const { document, email, password, name, last_name, cellphone, user_type } = req.body;
+  
+      if (!email || !password) {
+        return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
+      }
+  
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'El correo electrónico ya está registrado' });
+      }
+  
+      const existingDocument = await User.findOne({ document });
+      if (existingDocument) {
+        return res.status(400).json({ message: 'La cédula ya está registrada' });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10); // Encriptar la contraseña
+  
+      const newUser = new User({
+        document,
+        email,
+        password: hashedPassword,
+        name,
+        last_name,
+        cellphone,
+        user_type,
+      });
+  
+      await newUser.save();
+      res.status(201).json({ message: 'Usuario registrado correctamente', user: newUser });
+    } catch (error) {
+      console.error('Error al registrar el usuario:', error);
+      res.status(500).json({ message: 'Error al registrar el usuario', error });
     }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'El correo electrónico ya está registrado' });
-    }
-
-    const existingDocument = await User.findOne({ document });
-    if (existingDocument) {
-      return res.status(400).json({ message: 'La cédula ya está registrada' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10); // Encriptar la contraseña
-
-    const newUser = new User({
-      document,
-      email,
-      password: hashedPassword,
-      name,
-      last_name,
-      cellphone,
-      user_type,
-    });
-
-    await newUser.save();
-    res.status(201).json({ message: 'Usuario registrado correctamente', user: newUser });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al registrar el usuario', error });
-  }
-});
-
+  });
+  
 // Endpoint para iniciar sesión
 app.post('/login', async (req, res) => {
   try {
